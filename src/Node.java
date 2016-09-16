@@ -6,7 +6,8 @@ import java.util.ArrayList;
 public class Node {
 
     int id, sent_id;
-    ArrayList<Arc> left_children, right_children;
+    private ArrayList<Arc> left_children = new ArrayList<>();
+    private ArrayList<Arc> right_children = new ArrayList<>();
 
     public Node(int num, int sentence) {
         id = num;
@@ -21,11 +22,11 @@ public class Node {
         return sent_id;
     }
 
-    public ArrayList<Arc> getLeft_son() {
+    public ArrayList<Arc> getLeft_children() {
         return left_children;
     }
 
-    public ArrayList<Arc> getRight_son() {
+    public ArrayList<Arc> getRight_children() {
         return right_children;
     }
 
