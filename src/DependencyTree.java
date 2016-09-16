@@ -22,6 +22,21 @@ public class DependencyTree {
         return nodes;
     }
 
+    /**
+     * Adds a Node to the tree only if it didn't exist before
+     * @param id key of Node to add
+     * @return Node added
+     */
+    public Node addNode(int id) {
+        if (nodes.containsKey(id))
+            return nodes.get(id);
+        else {
+            Node new_node = new Node(id, sent_number);
+            nodes.put(id, new_node);
+            return new_node;
+        }
+    }
+
     public ArrayList<Arc> getArcs() {
         return arcs;
     }

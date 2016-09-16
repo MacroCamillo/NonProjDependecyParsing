@@ -8,6 +8,8 @@ public class Arc {
     private Node head = null;
     private Node tail = null;
 
+    public boolean added = false;
+
     public Arc(Node head, Node tail) {
         this.head = head;
         this.tail = tail;

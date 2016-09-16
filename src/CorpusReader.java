@@ -16,34 +16,38 @@ public class CorpusReader {
             String line;
 
             while ((line = reader.readLine()) != null) {
-            DependencyTree sentence = new DependencyTree(num_sentence);
-            sentence_list.add(sentence);
 
-            HashMap<Integer,Node> node_map = sentence.getNodes();
-            //node_map.put(0, new Node(0, num_sentence));
+                DependencyTree sentence = new DependencyTree(num_sentence);
+                sentence_list.add(sentence);
+                System.out.println("Sentence: " + num_sentence);
 
-                while(line.trim().length() != 0) {            //remove whitespaces
+                HashMap<Integer,Node> node_map = sentence.getNodes();
+                //node_map.put(0, new Node(0, num_sentence));
+
+                while(line != null && line.trim().length() != 0) {            //remove whitespaces
 
                     String[] parts = line.split("\t");
                     int current = Integer.parseInt(parts[0]);
                     int head = Integer.parseInt(parts[6]);
                     Node cur_node;
-                    //System.out.println("Current: "+current+" Head: "+head);
-
+                    System.out.println("Current: " + current + " Head: "+ head);
+/*
                     if (!node_map.containsKey(current)) {
                         cur_node = new Node(current, num_sentence);
                         node_map.put(current, cur_node);
                     } else
-                        cur_node = node_map.get(current); //se è testa di nodi precedenti esiste già
+                        cur_node = node_map.get(current); *///se è testa di nodi precedenti esiste già
+                    cur_node = sentence.addNode(current);
 
                     Node head_node; //= node_map.get(head);
                     if(head > current) {
-                        if (!node_map.containsKey(head)) {            //the Tree doesn't contain the head yet
+                       /* if (!node_map.containsKey(head)) {            //the Tree doesn't contain the head yet
                             head_node = new Node(head, num_sentence);
                             node_map.put(head, head_node);
                         } else
                             head_node = node_map.get(head);
-
+*/
+                        head_node = sentence.addNode(head);
                         head_node.addLeftSon(cur_node);
                     } else {
                         head_node = node_map.get(head);
