@@ -61,12 +61,14 @@ public class NivreProjectiveParser extends ProjectiveParser {
                 searched_arc.setAdded(true);
                 return RIGHT_ARC;
             }
-            else
+            else {
                 System.out.println(right_tail.getId() + " non ha ancora tutti i figli");
+                return SHIFT;
+            }
         }
 
         //Case SWAP
-        if(inorder.indexOf(top) < inorder.indexOf(top-1))
+        if(inorder.indexOf(sentence.get(top)) < inorder.indexOf(sentence.get(top-1)))
             return SWAP;
 
         return SHIFT;
@@ -122,8 +124,8 @@ public class NivreProjectiveParser extends ProjectiveParser {
 
                     System.out.println("SWAP " + swap_id);
 
-                    sentence.add(top_index - 1, sentence.get(top_index));
-                    sentence.add(top_index, swap_id);
+                    sentence.set(top_index - 1, sentence.get(top_index));
+                    sentence.set(top_index, swap_id);
                     top_index--;
                     break;
 
