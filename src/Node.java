@@ -5,9 +5,11 @@ import java.util.ArrayList;
  */
 public class Node {
 
-    int id, sent_id;
+    private int id, sent_id;
     private ArrayList<Arc> left_children = new ArrayList<>();
     private ArrayList<Arc> right_children = new ArrayList<>();
+
+    private ArrayList<Node> children = new ArrayList<>();
 
     public Node(int num, int sentence) {
         id = num;
@@ -32,11 +34,15 @@ public class Node {
 
     public void addLeftSon(Node left_son) {
         left_children.add(new Arc(this, left_son));
-        //TODO sort
+        children.add(left_son);
     }
 
     public void addRightSon(Node right_son) {
         right_children.add(new Arc(this, right_son));
-        //TODO sort
+        children.add(right_son);
     }
+
+   /* public boolean hasChild(int child_id) {
+        return children.contains();
+    }*/
 }

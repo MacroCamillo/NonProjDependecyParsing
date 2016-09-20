@@ -22,7 +22,6 @@ public class CorpusReader {
                 System.out.println("Sentence: " + num_sentence);
 
                 HashMap<Integer,Node> node_map = sentence.getNodes();
-                //node_map.put(0, new Node(0, num_sentence));
 
                 while(line != null && line.trim().length() != 0) {            //remove whitespaces
 
@@ -30,23 +29,13 @@ public class CorpusReader {
                     int current = Integer.parseInt(parts[0]);
                     int head = Integer.parseInt(parts[6]);
                     Node cur_node;
-                    System.out.println("Current: " + current + " Head: "+ head);
-/*
-                    if (!node_map.containsKey(current)) {
-                        cur_node = new Node(current, num_sentence);
-                        node_map.put(current, cur_node);
-                    } else
-                        cur_node = node_map.get(current); *///se è testa di nodi precedenti esiste già
+                    //System.out.println("Current: " + current + " Head: "+ head);
+
                     cur_node = sentence.addNode(current);
 
-                    Node head_node; //= node_map.get(head);
+                    Node head_node;
                     if(head > current) {
-                       /* if (!node_map.containsKey(head)) {            //the Tree doesn't contain the head yet
-                            head_node = new Node(head, num_sentence);
-                            node_map.put(head, head_node);
-                        } else
-                            head_node = node_map.get(head);
-*/
+
                         head_node = sentence.addNode(head);
                         head_node.addLeftSon(cur_node);
                     } else {

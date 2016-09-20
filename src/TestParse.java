@@ -1,11 +1,9 @@
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
- * Created by camillom on 14/09/16.
+ * Created by camillom on 19/09/16.
  */
-public class TestRead {
+public class TestParse {
 
     public static void main(String[] args){
 
@@ -23,9 +21,15 @@ public class TestRead {
         }
 
         ArrayList<DependencyTree> corpus = CorpusReader.read(file_path);
+        ProjectiveParser parser;
 
         for (DependencyTree sent : corpus) {
-            sent.printTree();
+            System.out.println("Sentence n." + sent.getSent_number());
+
+            parser = new NivreProjectiveParser(sent);
+            DependencyTree parsed = parser.execute();
+
+            parsed.printTree();
         }
     }
 }
