@@ -45,7 +45,7 @@ public class DependencyTree {
     }
 
     public void printTree() {
-        System.out.println("Sentence n." + this.sent_number);
+        System.out.println("Tree representation of sentence n." + this.sent_number);
 
         for (Map.Entry<Integer, Node> head : this.nodes.entrySet()) {
             System.out.print(head.getKey() + ": ");

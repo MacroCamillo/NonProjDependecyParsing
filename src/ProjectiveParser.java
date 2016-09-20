@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Stack;
 
 
 /**
@@ -9,8 +8,9 @@ public abstract class ProjectiveParser {
 
     final int  LEFT_ARC=0, RIGHT_ARC=1, SWAP=2, SHIFT=3;
     DependencyTree gold = null, builded = null;
+    int n_shift, n_op, n_swap, sent_length;
 
-    protected final ArrayList<Integer> inorder = new ArrayList<>();
+    protected final ArrayList<Integer> projective_order = new ArrayList<>();
     abstract int predictAction(ArrayList<Integer> sentence, int top);
     abstract DependencyTree execute();
 
@@ -21,7 +21,7 @@ public abstract class ProjectiveParser {
         for(Arc left : n.getLeft_children())
             createInorderTraversal(left.getTail());
 
-        inorder.add(n.getId());
+        projective_order.add(n.getId());
 
         for(Arc right : n.getRight_children())
             createInorderTraversal(right.getTail());
@@ -59,7 +59,7 @@ public abstract class ProjectiveParser {
                 Node n = s.pop();
                 //MANCA EVENTUALI LEFT CHILDREN DI POPPATI SE LI PUSHO COME RIGHT CHILDREN DOPO IL PRIMO
                 //visit Node
-                inorder.add(n.getId());
+                projective_order.add(n.getId());
                 if (n.getRight_children().size() == 0)
                     currentNode = null;
                 else {
@@ -71,8 +71,13 @@ public abstract class ProjectiveParser {
                 }
             }
         }*/
-
-
     }
 
+    protected void onPostExecute() {
+
+        System.out.println("Sentence length : " + (sent_length-1));
+        System.out.println("# SHIFT: " + n_shift);
+        System.out.println("# SWAP: " + n_swap);
+        System.out.println("# total operations: " + n_op);
+    }
 }

@@ -24,12 +24,12 @@ public class TestParse {
         ProjectiveParser parser;
 
         for (DependencyTree sent : corpus) {
-            System.out.println("Sentence n." + sent.getSent_number());
+            System.out.println("Parsing sentence n." + sent.getSent_number());
 
             parser = new NivreProjectiveParser(sent);
             DependencyTree parsed = parser.execute();
 
-            parsed.printTree();
+            //parsed.printTree();
         }
     }
 }

@@ -14,77 +14,89 @@ public class NivreProjectiveParser extends ProjectiveParser {
      * @param tail_id Id of the tail of the wanted arc
      * @return A reference to the wanted Arc, o null if this doesn't exist
      */
-    private Arc findArc(int head_id, int tail_id) {
+    private boolean findArc(int head_id, int tail_id) {
         //System.out.println("Searching arc " + head_id + "->" + tail_id);
-
+        Arc possible_arc = null;
         if (head_id > tail_id) {
-            for (Arc possible_arc : gold.getNodes().get(head_id).getLeft_children())
-                if (possible_arc.getTail().getId() == tail_id)
-                    return possible_arc;
+            for (Arc arc : gold.getNodes().get(head_id).getLeft_children())
+                if (arc.getTail().getId() == tail_id)
+                    possible_arc = arc;
         }
         else
-            for (Arc possible_arc : gold.getNodes().get(head_id).getRight_children()) {
-                //System.out.println("Possible tail "+ possible_arc.getTail().getId());
-                if (possible_arc.getTail().getId() == tail_id)
-                    return possible_arc;
+            for (Arc arc : gold.getNodes().get(head_id).getRight_children()) {
+                if (arc.getTail().getId() == tail_id)
+                    possible_arc = arc;
         }
-        return null;
-    }
-
-    public int predictAction(ArrayList<Integer> sentence, int top) {
-
-        //Ipotizzo LEFT ARC
-        Arc searched_arc = findArc(sentence.get(top), sentence.get(top - 1));
-        if (searched_arc != null) {
-            searched_arc.setAdded(true);
-            return LEFT_ARC;
-        }
-
-        //Ipotizzo RIGHT ARC
-        searched_arc = findArc(sentence.get(top - 1), sentence.get(top));
+        //Check if the found arc has a complete tail (we have already found his tail's children)
         boolean completo = true;
-        if (searched_arc !=  null) {
-            Node right_tail = searched_arc.getTail();
+        if (possible_arc != null) {
+            Node right_tail = possible_arc.getTail();
             for (Arc child : right_tail.getLeft_children())
                 if (!child.isAdded()) {
                     completo = false;
-                    System.out.print("Manca arco " + right_tail.getId() + "->" + child.getTail().getId() + " => ");
+                    //System.out.print("Manca arco " + right_tail.getId() + "->" + child.getTail().getId() + " => ");
                     break;
                 }
             for (Arc child : right_tail.getRight_children())
                 if (!child.isAdded()) {
-                    System.out.print("Manca arco " + right_tail.getId() + "->" + child.getTail().getId() + " => ");
+                    //System.out.print("Manca arco " + right_tail.getId() + "->" + child.getTail().getId() + " => ");
                     completo = false;
                     break;
                 }
-            if(completo) {
-                searched_arc.setAdded(true);
-                return RIGHT_ARC;
-            }
-            else {
-                System.out.println(right_tail.getId() + " non ha ancora tutti i figli");
-                return SHIFT;
+            if (completo) {
+                possible_arc.setAdded(true);
+                return true;
             }
         }
 
+        return false;
+    }
+
+    /**
+     * Oracle function of the parser, tells which action should be enterprised given the stack situation
+     * @param sentence The stack and buffer content
+     * @param top Index to the top element of the stack
+     * @return Constant coding the action
+     */
+    public int predictAction(ArrayList<Integer> sentence, int top) {
+
+        //Ipotizzo LEFT ARC
+        boolean found = findArc(sentence.get(top), sentence.get(top - 1));
+        if (found)
+            return LEFT_ARC;
+
+        //Ipotizzo RIGHT ARC
+        found = findArc(sentence.get(top - 1), sentence.get(top));
+        if (found) {
+            return RIGHT_ARC;
+        }
+
         //Case SWAP
-        if(inorder.indexOf(sentence.get(top)) < inorder.indexOf(sentence.get(top-1)))
+        if(projective_order.indexOf(sentence.get(top)) < projective_order.indexOf(sentence.get(top-1)))
             return SWAP;
 
         return SHIFT;
 
     }
 
+    /**
+     * Executes the parsing process
+     * @return The DependencyTree generated from parsing process
+     */
     public DependencyTree execute() {
 
-        int sent_length = gold.getNodes().entrySet().size();
+        sent_length = gold.getNodes().entrySet().size(); //COMPRESO ROOT
 
         ArrayList<Integer> sentence = new ArrayList<>();
         for (int i =0; i < sent_length; i++)
                 sentence.add(i);
 
         int top_index = 1;
-        builded = new DependencyTree(gold.getSent_number());//TODO number
+        n_shift = 2;            //Lo stack è inizializzato con due elementi
+        n_swap = 0;
+        n_op = 2;
+
+        builded = new DependencyTree(gold.getSent_number());
 
         int head_id, tail_id;
         Node head_node, tail_node;
@@ -95,7 +107,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
                     head_id = sentence.get(top_index);
                     tail_id = sentence.get(top_index - 1);
 
-                    System.out.println("LEFT_ARC " + tail_id + " <- " + head_id);
+                    //System.out.println("LEFT_ARC " + tail_id + " <- " + head_id);
 
                     head_node = builded.addNode(head_id);
                     tail_node = builded.addNode(tail_id);
@@ -109,7 +121,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
                     head_id = sentence.get(top_index - 1);
                     tail_id = sentence.get(top_index);
 
-                    System.out.println("RIGHT_ARC " + head_id + " -> " + tail_id);
+                    //System.out.println("RIGHT_ARC " + head_id + " -> " + tail_id);
 
                     head_node = builded.addNode(head_id);
                     tail_node = builded.addNode(tail_id);
@@ -122,19 +134,27 @@ public class NivreProjectiveParser extends ProjectiveParser {
                 case SWAP:
                     int swap_id = sentence.get(top_index - 1);
 
-                    System.out.println("SWAP " + swap_id);
+                    //System.out.println("SWAP " + swap_id);
 
                     sentence.set(top_index - 1, sentence.get(top_index));
                     sentence.set(top_index, swap_id);
                     top_index--;
+                    n_swap++;
                     break;
 
                 case SHIFT:
-                    System.out.println("SHIFT");
+                    //System.out.println("SHIFT");
+
                     top_index++;
+                    n_shift++;
                     break;
             }
+            n_op++;
         }
+        onPostExecute();
+        int theoric_n_op = (sent_length-1 + n_swap)*2 + 1;
+        if (n_op == theoric_n_op)
+            System.out.println("Number of operation as expected\n");
         return builded;
     }
 

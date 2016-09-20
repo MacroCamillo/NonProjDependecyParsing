@@ -19,7 +19,7 @@ public class CorpusReader {
 
                 DependencyTree sentence = new DependencyTree(num_sentence);
                 sentence_list.add(sentence);
-                System.out.println("Sentence: " + num_sentence);
+                //System.out.println("Sentence: " + num_sentence);
 
                 HashMap<Integer,Node> node_map = sentence.getNodes();
 
