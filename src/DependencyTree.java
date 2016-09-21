@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * Created by camillom on 06/09/16.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class DependencyTree {
 
     private HashMap<Integer,Node> nodes = new HashMap<>();
@@ -38,10 +39,6 @@ public class DependencyTree {
             nodes.put(id, new_node);
             return new_node;
         }
-    }
-
-    public ArrayList<Arc> getArcs() {
-        return arcs;
     }
 
     public void printTree() {

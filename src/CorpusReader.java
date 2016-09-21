@@ -5,6 +5,7 @@ import java.util.HashMap;
 /**
  * Created by camillom on 06/09/16.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class CorpusReader {
 
     public static ArrayList<DependencyTree> read(String filename) {

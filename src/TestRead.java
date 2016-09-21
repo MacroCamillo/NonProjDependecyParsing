@@ -1,10 +1,9 @@
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by camillom on 14/09/16.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class TestRead {
 
     public static void main(String[] args){

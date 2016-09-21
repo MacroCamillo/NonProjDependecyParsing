@@ -3,6 +3,7 @@ import java.util.ArrayList;
 /**
  * Created by camillom on 19/09/16.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class TestParse {
 
     public static void main(String[] args){
@@ -26,8 +27,15 @@ public class TestParse {
         for (DependencyTree sent : corpus) {
             System.out.println("Parsing sentence n." + sent.getSent_number());
 
-            parser = new NivreProjectiveParser(sent);
+            System.out.println("Parsing with 2-steps...");
+            parser = new TwoStepsProjectiveParser(sent);
             DependencyTree parsed = parser.execute();
+            System.out.println("... done\n");
+
+            //TODO: reset added field of arcs
+
+            //ProjectiveParser pars = new NivreProjectiveParser(sent);
+            //pars.execute();
 
             //parsed.printTree();
         }

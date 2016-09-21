@@ -1,8 +1,7 @@
-import java.util.ArrayList;
-
 /**
  * Created by camillom on 06/09/16.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Arc {
 
     private Node head = null;
