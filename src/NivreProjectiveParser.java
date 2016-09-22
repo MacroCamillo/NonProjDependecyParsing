@@ -17,7 +17,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
      * @return A reference to the wanted Arc, o null if this doesn't exist
      */
     private boolean findArc(int head_id, int tail_id) {
-        System.out.println("Searching arc " + head_id + "->" + tail_id);
+        //System.out.println("Searching arc " + head_id + "->" + tail_id);
         Arc possible_arc = null;
         if (head_id > tail_id) {
             for (Arc arc : gold.getNodes().get(head_id).getLeft_children())
@@ -32,7 +32,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
         //Check if the found arc has a complete tail (we have already found all his tail's children)
         boolean completo = true;
         if (possible_arc != null) {
-            Node right_tail = possible_arc.getTail();
+            Node right_tail = possible_arc.getTail(); //coda del possibile arco
             for (Arc child : right_tail.getLeft_children())
                 if (!child.isAdded()) {
                     completo = false;
@@ -61,7 +61,9 @@ public class NivreProjectiveParser extends ProjectiveParser {
      * @return Constant coding the action
      */
     public int predictAction(ArrayList<Integer> sentence, int top) {
-        System.out.println(top);
+
+        if (top == 0)
+            return SHIFT;
         //Ipotizzo LEFT ARC
         boolean found = findArc(sentence.get(top), sentence.get(top - 1));
         if (found)
@@ -145,9 +147,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
             n_op++;
         }
         printExecutionStats();
-        int theoric_n_op = (sent_length-1 + n_swap)*2 + 1;
-        if (n_op == theoric_n_op)
-            System.out.println("Number of operation as expected\n");
+
         return builded;
     }
 

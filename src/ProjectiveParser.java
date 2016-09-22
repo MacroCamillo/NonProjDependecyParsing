@@ -42,11 +42,15 @@ public abstract class ProjectiveParser {
     }
 
     protected void printExecutionStats() {
-        if (n_swap > 0) {
+        if (true) {
             System.out.println("Sentence length : " + (sent_length - 1));
             System.out.println("# SHIFT: " + n_shift);
             System.out.println("# SWAP: " + n_swap);
             System.out.println("# total operations: " + n_op);
         }
+    }
+
+    public int getN_op() {
+        return n_op;
     }
 }

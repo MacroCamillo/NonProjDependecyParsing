@@ -24,6 +24,11 @@ public class TestParse {
         ArrayList<DependencyTree> corpus = CorpusReader.read(file_path);
         ProjectiveParser parser;
 
+        int countBetter = 0, countWorse = 0;
+        int countSwapped = 0;
+        int totalOpNivre = 0, totalOpTwoSteps = 0;
+        int countWords = 0;
+
         for (DependencyTree sent : corpus) {
             System.out.println("Parsing sentence n." + sent.getSent_number());
 
@@ -32,12 +37,39 @@ public class TestParse {
             DependencyTree parsed = parser.execute();
             System.out.println("... done\n");
 
-            //TODO: reset added field of arcs
+            int twoStepsOp = parser.getN_op();
+            totalOpTwoSteps += twoStepsOp;
 
-            //ProjectiveParser pars = new NivreProjectiveParser(sent);
-            //pars.execute();
+            sent.resetAdded();
 
-            //parsed.printTree();
+            System.out.println("Parsing with original Nivre algorithm...");
+            parser = new NivreProjectiveParser(sent);
+            parser.execute();
+            System.out.println("... done");
+            System.out.println("-----------------------------------------");
+
+            int nivreOp = parser.getN_op();
+            totalOpNivre += nivreOp;
+
+            if (parser.n_swap > 0)
+                countSwapped++;
+            if (twoStepsOp < nivreOp)
+                countBetter++;
+            if (twoStepsOp > nivreOp)
+                countWorse++;
+
+            countWords += sent.getNodes().size();
         }
+
+        System.out.println("###################################################\n");
+        System.out.println("Total number of sentences: " + corpus.size());
+        System.out.println("Non-projective ones: " + countSwapped + "\n");
+
+        System.out.println("2-steps better than Nivre: " + countBetter + " times");
+        System.out.println("2-steps worse than Nivre: " + countWorse + " times\n");
+
+        System.out.println("Total word count: " + countWords);
+        System.out.println("Total operations with 2-steps: " + totalOpTwoSteps);
+        System.out.println("Total operations with Nivre: " + totalOpNivre);
     }
 }

@@ -41,6 +41,17 @@ public class DependencyTree {
         }
     }
 
+    public void resetAdded() {
+        for (Map.Entry<Integer, Node> head : this.nodes.entrySet()) {
+            ArrayList<Arc> children = head.getValue().getLeft_children();
+            for (Arc son : children)
+                son.setAdded(false);
+
+            children = head.getValue().getRight_children();
+            for (Arc son : children)
+                son.setAdded(false);
+        }
+    }
     public void printTree() {
         System.out.println("Tree representation of sentence n." + this.sent_number);
 

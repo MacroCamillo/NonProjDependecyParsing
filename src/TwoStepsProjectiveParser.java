@@ -21,6 +21,8 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
 
         Node head_node,tail_node;
         int top_index = 1;
+        n_shift = 2; n_op = 2;
+
         boolean first_swap = true, first_step = true;
         int swap_point = 0;
         while (sentence.size() > 1) {
@@ -29,7 +31,7 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                     head_node = builded.addNode(sentence.get(top_index));
                     tail_node = builded.addNode(sentence.get(top_index - 1));
 
-                    //System.out.println("LEFT_ARC " + tail_node.getId() + " <- " + head_node.getId());
+                    System.out.println("LEFT_ARC " + tail_node.getId() + " <- " + head_node.getId());
 
                     head_node.addLeftSon(tail_node);
                     sentence.remove(top_index - 1);
@@ -40,7 +42,7 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                     head_node = builded.addNode(sentence.get(top_index - 1));
                     tail_node = builded.addNode(sentence.get(top_index));
 
-                    //System.out.println("RIGHT_ARC " + head_node.getId() + " -> " + tail_node.getId());
+                    System.out.println("RIGHT_ARC " + head_node.getId() + " -> " + tail_node.getId());
 
                     head_node.addRightSon(tail_node);
                     sentence.remove(top_index);
@@ -55,29 +57,35 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                             swap_point = top_index;
                             first_swap = false;
                         }
-                        n_shift++;
                         top_index++;
+                        if (top_index < sentence.size()) {          //nel caso l'ultimo confronto sia caso swap
+                            n_shift++;
+                            System.out.println("SHIFT (instead of SWAP)");
+                        }
                         break;
                     } else {
                         int swap_id = sentence.get(top_index - 1);
                         sentence.set(top_index - 1, sentence.get(top_index));
                         sentence.set(top_index, swap_id);
 
+                        System.out.println("SWAP");
                         top_index--;
                         n_swap++;
                         break;
                     }
 
                 case SHIFT:
-                    //System.out.println("SHIFT");
-
                     top_index++;
-                    n_shift++;
+                    if (top_index < sentence.size()) {
+                        System.out.println("SHIFT");
+                        n_shift++;
+                    }
                     break;
             } //end switch
             n_op++;
             if (first_step && top_index == sentence.size()) {
-                top_index = swap_point;
+                System.out.println("Retracting TOP");
+                top_index = swap_point;                 //TODO: va contata come operazione/n operazioni? Per ora conta uno
                 first_step = false;
             }
         }
