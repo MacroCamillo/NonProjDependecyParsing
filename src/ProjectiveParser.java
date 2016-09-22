@@ -9,7 +9,7 @@ public abstract class ProjectiveParser {
 
     final int  LEFT_ARC=0, RIGHT_ARC=1, SWAP=2, SHIFT=3;
     DependencyTree gold = null;
-    int n_shift, n_op, n_swap, sent_length;
+    protected int n_shift, n_op, n_swap, sent_length;
 
     protected final ArrayList<Integer> projective_order = new ArrayList<>();
     abstract int predictAction(ArrayList<Integer> sentence, int top);
@@ -17,6 +17,10 @@ public abstract class ProjectiveParser {
 
     public ProjectiveParser(DependencyTree target) {
         setTargetTree(target);
+    }
+
+    public int getN_swap() {
+        return n_swap;
     }
 
     public void setTargetTree(DependencyTree target) {
@@ -42,7 +46,7 @@ public abstract class ProjectiveParser {
     }
 
     protected void printExecutionStats() {
-        if (true) {
+        if (n_swap > 0) {
             System.out.println("Sentence length : " + (sent_length - 1));
             System.out.println("# SHIFT: " + n_shift);
             System.out.println("# SWAP: " + n_swap);

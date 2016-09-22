@@ -29,12 +29,15 @@ public class TestParse {
         int totalOpNivre = 0, totalOpTwoSteps = 0;
         int countWords = 0;
 
+        int countRemainedSwap = 0;
         for (DependencyTree sent : corpus) {
             System.out.println("Parsing sentence n." + sent.getSent_number());
 
             System.out.println("Parsing with 2-steps...");
             parser = new TwoStepsProjectiveParser(sent);
             DependencyTree parsed = parser.execute();
+            /*if(parser.n_swap > 1)
+                countRemainedSwap += (parser.n_swap-1);*/
             System.out.println("... done\n");
 
             int twoStepsOp = parser.getN_op();
@@ -71,5 +74,7 @@ public class TestParse {
         System.out.println("Total word count: " + countWords);
         System.out.println("Total operations with 2-steps: " + totalOpTwoSteps);
         System.out.println("Total operations with Nivre: " + totalOpNivre);
+
+        //System.out.println("Swap residui: " + countRemainedSwap);
     }
 }
