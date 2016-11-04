@@ -4,10 +4,32 @@ import java.util.ArrayList;
  * Created by camillom on 21/09/16.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class TwoStepsProjectiveParser extends NivreProjectiveParser {
+public class TwoStepProjectiveParser extends ProjectiveParser {
 
-    public TwoStepsProjectiveParser(DependencyTree sent) {
+    public TwoStepProjectiveParser(DependencyTree sent) {
         super(sent);
+    }
+
+    public int predictAction(ArrayList<Integer> sentence, int top) {
+
+        if (top == 0)
+            return SHIFT;
+        //Case LEFT ARC
+        boolean found = findArc(sentence.get(top), sentence.get(top - 1));
+        if (found)
+            return LEFT_ARC;
+
+        //Case RIGHT ARC
+        found = findArc(sentence.get(top - 1), sentence.get(top));
+        if (found) {
+            return RIGHT_ARC;
+        }
+
+        //Case SWAP
+        if(projective_order.indexOf(sentence.get(top)) < projective_order.indexOf(sentence.get(top-1)))
+            return SWAP;
+
+        return SHIFT;
     }
 
     public DependencyTree execute() {
@@ -21,7 +43,7 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
 
         Node head_node,tail_node;
         int top_index = 1;
-        n_shift = 2; n_op = 2;
+        n_shift = 1; n_op = 1;
 
         boolean first_swap = true, first_step = true;
         int swap_point = 0;
@@ -30,8 +52,6 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                 case LEFT_ARC:
                     head_node = builded.addNode(sentence.get(top_index));
                     tail_node = builded.addNode(sentence.get(top_index - 1));
-
-                    //System.out.println("LEFT_ARC " + tail_node.getId() + " <- " + head_node.getId());
 
                     head_node.addLeftSon(tail_node);
                     sentence.remove(top_index - 1);
@@ -42,8 +62,6 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                     head_node = builded.addNode(sentence.get(top_index - 1));
                     tail_node = builded.addNode(sentence.get(top_index));
 
-                    //System.out.println("RIGHT_ARC " + head_node.getId() + " -> " + tail_node.getId());
-
                     head_node.addRightSon(tail_node);
                     sentence.remove(top_index);
                     top_index--;
@@ -53,14 +71,12 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
 
                     if (first_step) {
                         if (first_swap) {
-                            //System.out.println("Suppressing SWAP of " + sentence.get(top_index-1));
                             swap_point = top_index;
                             first_swap = false;
                         }
                         top_index++;
                         if (top_index < sentence.size()) {          //nel caso l'ultimo confronto sia caso swap
                             n_shift++;
-                            //System.out.println("SHIFT (instead of SWAP)");
                         }
                         break;
                     } else {
@@ -68,7 +84,6 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                         sentence.set(top_index - 1, sentence.get(top_index));
                         sentence.set(top_index, swap_id);
 
-                        //System.out.println("SWAP");
                         top_index--;
                         n_swap++;
                         break;
@@ -77,19 +92,18 @@ public class TwoStepsProjectiveParser extends NivreProjectiveParser {
                 case SHIFT:
                     top_index++;
                     if (top_index < sentence.size()) {
-                        //System.out.println("SHIFT");
                         n_shift++;
                     }
                     break;
             } //end switch
             n_op++;
             if (first_step && top_index == sentence.size()) {
-                //System.out.println("Retracting TOP");
                 top_index = swap_point;                 //TODO: va contata come operazione/n operazioni? Per ora conta uno
                 first_step = false;
             }
         }
-        printExecutionStats();
+        if (n_swap > 0)
+            printExecutionStats();
         return builded;
     }
 }

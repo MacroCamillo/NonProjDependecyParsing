@@ -26,22 +26,23 @@ public class TestParse {
 
         int countBetter = 0, countWorse = 0;
         int countSwapped = 0;
-        int totalOpNivre = 0, totalOpTwoSteps = 0;
+        int totalOpNivre = 0, totalOpTwoStep = 0;
         int countWords = 0;
 
-        int countRemainedSwap = 0;
+        ArrayList<Integer> TwoStepWins = new ArrayList<>();
+        ArrayList<Integer> NivreWins = new ArrayList<>();
+
         for (DependencyTree sent : corpus) {
             System.out.println("Parsing sentence n." + sent.getSent_number());
 
             System.out.println("Parsing with 2-steps...");
-            parser = new TwoStepsProjectiveParser(sent);
-            DependencyTree parsed = parser.execute();
-            /*if(parser.n_swap > 1)
-                countRemainedSwap += (parser.n_swap-1);*/
+            parser = new TwoStepProjectiveParser(sent);
+            parser.execute();
             System.out.println("... done\n");
 
-            int twoStepsOp = parser.getN_op();
-            totalOpTwoSteps += twoStepsOp;
+            int twoStepOp = parser.getN_op();
+            if (parser.n_swap > 0)
+                totalOpTwoStep += twoStepOp;
 
             sent.resetAdded();
 
@@ -49,17 +50,25 @@ public class TestParse {
             parser = new NivreProjectiveParser(sent);
             parser.execute();
             System.out.println("... done");
-            System.out.println("-----------------------------------------");
 
             int nivreOp = parser.getN_op();
-            totalOpNivre += nivreOp;
-
-            if (parser.n_swap > 0)
+            if (parser.n_swap > 0) {
+                totalOpNivre += nivreOp;
                 countSwapped++;
-            if (twoStepsOp < nivreOp)
+            }
+            System.out.println("\n-----------------------------------------");
+
+
+            //Compute statistics over whole sentences
+            if (twoStepOp < nivreOp) {
                 countBetter++;
-            if (twoStepsOp > nivreOp)
+  //              TwoStepWins.add(sent.getSent_number());
+            }
+
+            if (twoStepOp > nivreOp) {
                 countWorse++;
+//              NivreWins.add(sent.getSent_number());
+            }
 
             countWords += sent.getNodes().size();
         }
@@ -68,13 +77,15 @@ public class TestParse {
         System.out.println("Total number of sentences: " + corpus.size());
         System.out.println("Non-projective ones: " + countSwapped + "\n");
 
-        System.out.println("2-steps better than Nivre: " + countBetter + " times");
-        System.out.println("2-steps worse than Nivre: " + countWorse + " times\n");
+        System.out.println("2-step better than Nivre: " + countBetter + " times");
+//        for (int i : TwoStepWins)
+//            System.out.print(i + " ");
 
-        System.out.println("Total word count: " + countWords);
-        System.out.println("Total operations with 2-steps: " + totalOpTwoSteps);
-        System.out.println("Total operations with Nivre: " + totalOpNivre);
+        System.out.println("\n2-step worse than Nivre: " + countWorse + " times: ");
 
-        //System.out.println("Swap residui: " + countRemainedSwap);
+        System.out.println("\n\nTotal word count: " + countWords);
+        System.out.println("Total operations in non-projective sentences with 2-step: " + totalOpTwoStep);
+        System.out.println("Total operations in non-projective sentences with Nivre: " + totalOpNivre);
+
     }
 }

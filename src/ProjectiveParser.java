@@ -1,10 +1,9 @@
 import java.util.ArrayList;
 
-
 /**
  * Created by camillom on 16/09/16.
  */
-@SuppressWarnings("DefaultFileTemplate")
+
 public abstract class ProjectiveParser {
 
     final int  LEFT_ARC=0, RIGHT_ARC=1, SWAP=2, SHIFT=3;
@@ -45,13 +44,53 @@ public abstract class ProjectiveParser {
 
     }
 
-    protected void printExecutionStats() {
-        if (n_swap > 0) {
-            System.out.println("Sentence length : " + (sent_length - 1));
-            System.out.println("# SHIFT: " + n_shift);
-            System.out.println("# SWAP: " + n_swap);
-            System.out.println("# total operations: " + n_op);
+    /**
+     * Returns the Arc reference from gold Tree corresponding to given head and tail, if existing
+     * @param head_id Id of the head of the wanted arc
+     * @param tail_id Id of the tail of the wanted arc
+     * @return A reference to the wanted Arc, o null if this doesn't exist
+     */
+    protected boolean findArc(int head_id, int tail_id) {
+        Arc possible_arc = null;
+        if (head_id > tail_id) {
+            for (Arc arc : gold.getNodes().get(head_id).getLeft_children())
+                if (arc.getTail().getId() == tail_id)
+                    possible_arc = arc;
         }
+        else
+            for (Arc arc : gold.getNodes().get(head_id).getRight_children()) {
+                if (arc.getTail().getId() == tail_id)
+                    possible_arc = arc;
+            }
+
+        //Check if the found arc has a complete tail (we have already found all his tail's children)
+        boolean complete = true;
+        if (possible_arc != null) {
+            Node right_tail = possible_arc.getTail(); //coda del possibile arco
+            for (Arc child : right_tail.getLeft_children())
+                if (!child.isAdded()) {
+                    complete = false;
+                    break;
+                }
+            for (Arc child : right_tail.getRight_children())
+                if (!child.isAdded()) {
+                    complete = false;
+                    break;
+                }
+            if (complete) {
+                possible_arc.setAdded(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void printExecutionStats() {
+        System.out.println("Sentence length : " + (sent_length - 1));
+        System.out.println("# SHIFT: " + n_shift);
+        System.out.println("# SWAP: " + n_swap);
+        System.out.println("# total operations: " + n_op);
+
     }
 
     public int getN_op() {
