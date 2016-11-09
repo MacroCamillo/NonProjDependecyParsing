@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Created by camillom on 16/09/16.
  */
 
-public abstract class ProjectiveParser {
+public abstract class NonProjectiveParsingSystem {
 
     final int  LEFT_ARC=0, RIGHT_ARC=1, SWAP=2, SHIFT=3;
     DependencyTree gold = null;
@@ -14,13 +14,14 @@ public abstract class ProjectiveParser {
     abstract int predictAction(ArrayList<Integer> sentence, int top);
     abstract DependencyTree execute();
 
-    public ProjectiveParser(DependencyTree target) {
+    public NonProjectiveParsingSystem(DependencyTree target) {
         setTargetTree(target);
     }
 
-    public int getN_swap() {
-        return n_swap;
-    }
+    /**
+     * Sets the Dependency Tree the oracle function must follow
+     * @param target the target Dependency tree
+     */
 
     public void setTargetTree(DependencyTree target) {
         this.gold = target;
@@ -30,6 +31,10 @@ public abstract class ProjectiveParser {
         createInorderTraversal(root);
     }
 
+    /**
+     * Initialize an ArrayList with the sequence generated from the inorder traversal
+     * @param n the starting Node
+     */
     private void createInorderTraversal(Node n) {
         if(n == null)
             return;
@@ -45,10 +50,10 @@ public abstract class ProjectiveParser {
     }
 
     /**
-     * Returns the Arc reference from gold Tree corresponding to given head and tail, if existing
+     * Checks if an arc between any two nodes exists
      * @param head_id Id of the head of the wanted arc
      * @param tail_id Id of the tail of the wanted arc
-     * @return A reference to the wanted Arc, o null if this doesn't exist
+     * @return whether an Arc has been found or not
      */
     protected boolean findArc(int head_id, int tail_id) {
         Arc possible_arc = null;
@@ -66,13 +71,13 @@ public abstract class ProjectiveParser {
         //Check if the found arc has a complete tail (we have already found all his tail's children)
         boolean complete = true;
         if (possible_arc != null) {
-            Node right_tail = possible_arc.getTail(); //coda del possibile arco
-            for (Arc child : right_tail.getLeft_children())
+            Node possible_tail = possible_arc.getTail();
+            for (Arc child : possible_tail.getLeft_children())
                 if (!child.isAdded()) {
                     complete = false;
                     break;
                 }
-            for (Arc child : right_tail.getRight_children())
+            for (Arc child : possible_tail.getRight_children())
                 if (!child.isAdded()) {
                     complete = false;
                     break;

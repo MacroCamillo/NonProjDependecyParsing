@@ -4,9 +4,9 @@ import java.util.ArrayList;
  * Created by camillom on 16/09/16.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class NivreProjectiveParser extends ProjectiveParser {
+public class NivreParsingSystem extends NonProjectiveParsingSystem {
 
-    public NivreProjectiveParser(DependencyTree sent) {
+    public NivreParsingSystem(DependencyTree sent) {
         super(sent);
     }
 
@@ -44,7 +44,7 @@ public class NivreProjectiveParser extends ProjectiveParser {
      */
     public DependencyTree execute() {
 
-        sent_length = gold.getNodes().entrySet().size(); //COUNTING ROOT
+        sent_length = gold.getNodes().entrySet().size();
 
         ArrayList<Integer> sentence = new ArrayList<>();
         for (int i = 0; i < sent_length; i++)

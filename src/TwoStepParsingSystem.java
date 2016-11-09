@@ -4,12 +4,18 @@ import java.util.ArrayList;
  * Created by camillom on 21/09/16.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class TwoStepProjectiveParser extends ProjectiveParser {
+public class TwoStepParsingSystem extends NonProjectiveParsingSystem {
 
-    public TwoStepProjectiveParser(DependencyTree sent) {
+    public TwoStepParsingSystem(DependencyTree sent) {
         super(sent);
     }
 
+    /**
+     * Oracle function of the parser, tells which transition should be chosen given the stack situation
+     * @param sentence The stack and buffer content
+     * @param top Index to the top element of the stack
+     * @return Constant coding the action
+     */
     public int predictAction(ArrayList<Integer> sentence, int top) {
 
         if (top == 0)
@@ -32,6 +38,10 @@ public class TwoStepProjectiveParser extends ProjectiveParser {
         return SHIFT;
     }
 
+    /**
+     * Executes the parsing algorithm
+     * @return The DependencyTree generated from parsing process
+     */
     public DependencyTree execute() {
 
         sent_length = gold.getNodes().entrySet().size();
@@ -47,6 +57,7 @@ public class TwoStepProjectiveParser extends ProjectiveParser {
 
         boolean first_swap = true, first_step = true;
         int swap_point = 0;
+
         while (sentence.size() > 1) {
             switch (predictAction(sentence, top_index)) {
                 case LEFT_ARC:
@@ -75,9 +86,7 @@ public class TwoStepProjectiveParser extends ProjectiveParser {
                             first_swap = false;
                         }
                         top_index++;
-                        if (top_index < sentence.size()) {          //nel caso l'ultimo confronto sia caso swap
-                            n_shift++;
-                        }
+                        n_shift++;
                         break;
                     } else {
                         int swap_id = sentence.get(top_index - 1);
@@ -91,14 +100,12 @@ public class TwoStepProjectiveParser extends ProjectiveParser {
 
                 case SHIFT:
                     top_index++;
-                    if (top_index < sentence.size()) {
-                        n_shift++;
-                    }
+                    n_shift++;
                     break;
             } //end switch
             n_op++;
             if (first_step && top_index == sentence.size()) {
-                top_index = swap_point;                 //TODO: va contata come operazione/n operazioni? Per ora conta uno
+                top_index = swap_point;
                 first_step = false;
             }
         }
